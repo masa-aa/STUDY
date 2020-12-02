@@ -56,10 +56,8 @@ class Kyoto_ontime(gym.Env):
             moved = False
 
         observation = self._observe()
-        if self._is_game_over():
-            reward = -100
-        else:
-            reward = self._get_reward(self.pos, moved)
+
+        reward = self._get_reward(self.pos, moved)
         self.done = self._is_done()
         return observation, reward, self.done, {}
 
@@ -69,6 +67,8 @@ class Kyoto_ontime(gym.Env):
 
     def _get_reward(self, pos, moved):
         """報酬を返す. 再考の余地あり"""
+        if self._is_game_over():
+            return -100
         if not moved:
             return -1
         if self.goal == pos:

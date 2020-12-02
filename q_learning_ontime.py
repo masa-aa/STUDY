@@ -46,7 +46,7 @@ def train(episode_count=10, report_interval=1):
     d = get_time()
     happiness = np.array(get_happiness("中国")) * 100
     time_limit = 300
-    agent = QLearningAgent(epsilon=0.1)
+    agent = QLearningAgent(epsilon=0.01)
     env = gym.make("Kyoto_ontime-v0", n=25, start=0, goal=24, happiness=happiness, time_limit=time_limit, d=d)
     agent.learn(env, episode_count=episode_count, report_interval=report_interval)
     # show_q_value(agent.Q)
@@ -54,4 +54,4 @@ def train(episode_count=10, report_interval=1):
 
 
 if __name__ == "__main__":
-    train(episode_count=50000, report_interval=2000)
+    train(episode_count=1000, report_interval=1)

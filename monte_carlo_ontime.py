@@ -13,7 +13,7 @@ class MonteCarloAgent(ELAgent):
         super().__init__(epsilon)
 
     def learn(self, env, episode_count=1000, gamma=0.9,
-              render=False, report_interval=50):
+              render=False, report_interval=50, show_log=True):
         self.init_log()
         actions = list(range(env.action_space.n))
         self.Q = defaultdict(lambda: [0] * len(actions))
@@ -51,7 +51,7 @@ class MonteCarloAgent(ELAgent):
                 # 更新式
                 self.Q[s][a] += alpha * (G - self.Q[s][a])
 
-            if e != 0 and e % report_interval == 0:
+            if show_log and e != 0 and e % report_interval == 0:
                 self.show_reward_log(episode=e, interval=report_interval)
 
 
