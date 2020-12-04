@@ -9,8 +9,8 @@ import numpy as np
 
 class MonteCarloAgent(ELAgent):
 
-    def __init__(self, epsilon=0.1):
-        super().__init__(epsilon)
+    def __init__(self, epsilon=0.1, Q={}):
+        super().__init__(epsilon, Q)
 
     def learn(self, env, episode_count=1000, gamma=0.9,
               render=False, report_interval=50, show_log=True):

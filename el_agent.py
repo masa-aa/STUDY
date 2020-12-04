@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 
 class ELAgent():
 
-    def __init__(self, epsilon):
-        self.Q = {}
+    def __init__(self, epsilon, Q={}):
+        self.Q = Q
         self.epsilon = epsilon
         self.reward_log = []
 
