@@ -5,6 +5,7 @@ import numpy as np
 from monte_carlo_ontime import MonteCarloAgent
 from q_learning_ontime import QLearningAgent
 from play import play
+from collections import defaultdict
 
 
 def make_env(n=25, start=12, goal=6, country="中国"):
@@ -27,20 +28,25 @@ def train(Agent=MonteCarloAgent,
           report_interval=1,
           country="中国",
           save=False):
-
-    agent = Agent(epsilon=epsilon, Q=Q)
     env = make_env(country=country)
+    agent = Agent(epsilon=epsilon, env=env, Q=Q)
     agent.learn(env, episode_count=episode_count, report_interval=report_interval, show_log=False)
     # show_q_value(agent.Q)
     if not save:
         agent.show_reward_log(interval=report_interval)
     else:
         Q = agent.Q
-        return Q
+        return dict(Q)
 
 
 if __name__ == "__main__":
-    Q = train(Agent=MonteCarloAgent, episode_count=2000000, epsilon=0.1, report_interval=1000, country="中国", save=True)
+    Q = train(Agent=MonteCarloAgent,
+              episode_count=200000,
+              epsilon=0.1,
+              Q={},
+              report_interval=1000,
+              country="中国",
+              save=True)
     reward, route = play(make_env(country="中国"), Q, show_mode=True)
     print(reward)
     print(route)

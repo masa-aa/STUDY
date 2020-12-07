@@ -13,9 +13,10 @@ def play(env, Q, show_mode=False):
     reward = 0
     experiece = [env.pos]
     while not done:
-        if reward < 0:
+        if s not in Q:
             a = np.random.randint(len(actions))
-        a = np.argmax(Q[s])
+        else:
+            a = np.argmax(Q[s])
         n_state, reward, done, _ = env.step(a)
         s = n_state
         experiece.append(s[0])
