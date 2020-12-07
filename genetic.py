@@ -50,7 +50,7 @@ if __name__ == "__main__":
     t = time()
     results = multi_train(n, Qs, 6000000, np.random.choice(rand), country)
     t = int(time() - t)
-    print("{}h {}m {}s".format(t // 3600, (t % 60) // 60, t % 3600))
+    print("{}h {}m {}s".format(t // 3600, (t % 3600) // 60, t % 60))
     results.sort(key=lambda x: x[0], reverse=1)
     # Qs = [v[1] for v in results]
     print([int(v[0]) for v in results])
