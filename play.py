@@ -22,8 +22,7 @@ def play(env, Q, show_mode=False):
         experiece.append(s[0])
         sum_reward += reward
 
-    if show_mode:
-        g = get_spots()
+    g = get_spots()
 
     return (sum_reward, " -> ".join(map(lambda x: g[x], experiece))) if show_mode \
-        else (sum_reward, experiece)
+        else (sum_reward, list(map(lambda x: g[x], experiece)))
