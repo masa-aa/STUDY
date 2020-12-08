@@ -65,7 +65,7 @@ class Kyoto(gym.Env):
 
     def _is_movable(self, next_pos):
         """合法手か否か. use[pos]なら既に行った場所なので非合法"""
-        return 1 - self.use[next_pos]
+        return (1 - self.use[next_pos])
 
     def _get_reward(self, pos, moved):
         """報酬を返す. 再考の余地あり"""

@@ -13,7 +13,7 @@ def play(env, Q, show_mode=False):
     reward = 0
     experiece = [env.pos]
     while not done:
-        if s not in Q:
+        if s not in Q or reward < 0:
             a = np.random.randint(len(actions))
         else:
             a = np.argmax(Q[s])
@@ -23,6 +23,5 @@ def play(env, Q, show_mode=False):
         sum_reward += reward
 
     g = get_spots()
-
-    return (sum_reward, " -> ".join(map(lambda x: g[x], experiece))) if show_mode \
-        else (sum_reward, list(map(lambda x: g[x], experiece)))
+    return ((sum_reward, env.time), " -> ".join(map(lambda x: g[x], experiece))) if show_mode \
+        else ((sum_reward, env.time), list(map(lambda x: g[x], experiece)))

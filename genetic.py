@@ -9,10 +9,12 @@ from train_ontime import train, make_env
 from multiprocessing import Pool, cpu_count
 from time import time
 from collections import defaultdict
+cnt = 0
 
 
 def _train(a):
     episode_count, epsilon, Q, country = a
+    print(epsilon)
     _q = train(Agent=MonteCarloAgent,
                episode_count=episode_count,
                epsilon=epsilon,
@@ -20,6 +22,10 @@ def _train(a):
                report_interval=1000,
                country=country,
                save=True)
+    global cnt
+    print("fininsh:{}".format(cnt))
+    cnt += 1
+
     return (play(make_env(country=country), _q, show_mode=False)[0], _q)
 
 
@@ -43,17 +49,18 @@ def _one_cpu(n):
 
 
 if __name__ == "__main__":
-    n = 96
+
+    n = 16
     country = "中国"
     env = make_env(country=country)
+    print(env.d)
     Qs = [{} for _ in range(n)]
     t = time()
-    results = multi_train(n, Qs, 60000, 0.1, country)
+    results = multi_train(n, Qs, 200000, 0.1, country)
     t = int(time() - t)
     print("{}h {}m {}s".format(t // 3600, (t % 3600) // 60, t % 60))
     results.sort(key=lambda x: x[0], reverse=1)
     # Qs = [v[1] for v in results]
-    print([int(v[0]) for v in results])
     routes = set()
     unique_results = []
     for score, q in results:
