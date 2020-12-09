@@ -13,8 +13,9 @@ cnt = 0
 
 
 def _train(a):
+    global cnt
     episode_count, epsilon, Q, country = a
-    print(epsilon)
+    print("start:{}".format(cnt))
     _q = train(Agent=MonteCarloAgent,
                episode_count=episode_count,
                epsilon=epsilon,
@@ -22,7 +23,6 @@ def _train(a):
                report_interval=1000,
                country=country,
                save=True)
-    global cnt
     print("fininsh:{}".format(cnt))
     cnt += 1
 
@@ -53,10 +53,9 @@ if __name__ == "__main__":
     n = 16
     country = "中国"
     env = make_env(country=country)
-    print(env.d)
     Qs = [{} for _ in range(n)]
     t = time()
-    results = multi_train(n, Qs, 200000, 0.1, country)
+    results = multi_train(n, Qs, 1000000, 0.1, country)
     t = int(time() - t)
     print("{}h {}m {}s".format(t // 3600, (t % 3600) // 60, t % 60))
     results.sort(key=lambda x: x[0], reverse=1)

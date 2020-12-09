@@ -1,6 +1,6 @@
 import gym
 import Kyoto_env_ontime
-from get_data import get_time, get_happiness
+from get_data import get_time, get_happiness, get_distance
 import numpy as np
 from monte_carlo_ontime import MonteCarloAgent
 from q_learning_ontime import QLearningAgent
@@ -12,11 +12,13 @@ def make_env(n=25, start=12, goal=6, country="中国", stay=30):
     """標準は京都駅スタート, 祇園解散"""
     d = get_time(stay=stay)
     happiness = get_happiness(country) * 100
+    distance = get_distance()
     time_limit = 300
     env = gym.make("Kyoto_ontime-v0",
                    n=n, start=start, goal=goal,
                    happiness=happiness,
                    time_limit=time_limit,
+                   distance=distance,
                    d=d)
     return env
 
