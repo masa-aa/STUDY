@@ -9,6 +9,7 @@ from train_ontime import train, make_env
 from multiprocessing import Pool, cpu_count
 from time import time
 from collections import defaultdict
+from TSP import convert
 cnt = 0
 
 
@@ -26,7 +27,7 @@ def _train(a):
     print("fininsh:{}".format(cnt))
     cnt += 1
 
-    return (play(make_env(country=country), _q, show_mode=False)[0], _q)
+    return (play(make_env(country=country), _q, show_mode=0)[0], _q)
 
 
 def multi_train(n, Qs, episode_count=2000000, epsilon=0.1, country="中国"):
@@ -35,10 +36,6 @@ def multi_train(n, Qs, episode_count=2000000, epsilon=0.1, country="中国"):
     results = p.map(_train, [(episode_count, np.random.choice(rand), Qs[i], country) for i in range(n)])
     p.close()
     return results
-
-
-def new_gen():
-    return
 
 
 def _one_cpu(n):
@@ -55,7 +52,7 @@ if __name__ == "__main__":
     env = make_env(country=country)
     Qs = [{} for _ in range(n)]
     t = time()
-    results = multi_train(n, Qs, 1000000, 0.1, country)
+    results = multi_train(n, Qs, 100000, 0.1, country)
     t = int(time() - t)
     print("{}h {}m {}s".format(t // 3600, (t % 3600) // 60, t % 60))
     results.sort(key=lambda x: x[0], reverse=1)
@@ -63,8 +60,9 @@ if __name__ == "__main__":
     routes = set()
     unique_results = []
     for score, q in results:
-        score, route = play(env, q, show_mode=False)
-        route = tuple(route)
+        score, route = play(env, q, show_mode=2)
+        route = convert(env.d, tuple(route))
+
         if route in routes:
             continue
         unique_results.append((score, route))

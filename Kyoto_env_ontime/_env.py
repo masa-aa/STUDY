@@ -34,9 +34,9 @@ class Kyoto_ontime(gym.Env):
         self.time = 0
         self.use = [0] * self.n
         self.use[self.start] = 1
-        # if self.start == 12:
-        #     self.use[11] = 1
-        #     self.time += 30
+        if self.start == 12:
+            self.use[11] = 1
+            self.time += 30
         return self._observe()
 
     def _render(self):
@@ -68,11 +68,11 @@ class Kyoto_ontime(gym.Env):
 
     def _is_movable(self, next_pos):
         """合法手か否か. use[pos]なら既に行った場所なので非合法"""
-        return 1 - self.use[next_pos]
+        return (1 - self.use[next_pos]) and (self.distance[self.pos][next_pos] < 5e3)
 
     def _get_reward(self, pos, moved):
         """報酬を返す. 再考の余地あり"""
-        if self._is_game_over():
+        if self._is_game_over() or self.not_movable():
             return -100
         if not moved:
             return -1
@@ -85,7 +85,14 @@ class Kyoto_ontime(gym.Env):
 
     def _is_done(self):
         """時間切れかゴールにたどり着くとdone"""
-        return self.pos == self.goal or self.time_limit < self.time
+        return self.pos == self.goal or self.time_limit < self.time or self.not_movable()
 
     def _is_game_over(self):
         return self.time_limit < self.time
+
+    def not_movable(self):
+        for i in range(self.n):
+            if self.use[i] == 0 and self.distance[self.pos][i] < 5e3:
+                return False
+
+        return True

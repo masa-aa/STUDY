@@ -32,11 +32,12 @@ def get_time(stay=0):
 
 def get_happiness(country):
     """幸福度を返す"""
+    """warning:各幸福度が100以上になってはならない"""
     wb = xlrd.open_workbook('data/AHP.xlsx')
     sheet = wb.sheet_by_name(country)
     col = ord("R") - ord("A")
     happiness = [sheet.cell_value(row, col) for row in range(3, 28)]
-    return np.array(happiness)
+    return np.array(happiness) + 1 / 5
 
 
 def get_spots():
@@ -68,7 +69,7 @@ def get_distance():
          '東寺': (34.980598, 135.747786),
          '高台寺': (35.00051, 135.781218),
          '南禅寺': (35.011414, 135.794484),
-         '東福寺': (32.834731, 130.755811),
+         '東福寺': (34.976064, 135.773777),
          '平安神宮': (35.015982, 135.782426),
          '嵐山モンキーパーク': (35.011408, 135.676206),
          '東山': (34.992396, 135.775797),
