@@ -22,12 +22,19 @@ def get_list_2d(sheet, start_row, end_row, start_col, end_col):
             for row in range(start_row, end_row)]
 
 
-def get_time(stay=0):
+def get_time(stay=0, edge_limit=5):
     """距離行列(time)を返す"""
+    """
+    　stay:滞在時間
+    　edge_limit:自身を含む辺をつなぐ数
+    """
     wb = xlrd.open_workbook('data/time.xlsx')
     sheet = wb.sheet_by_name('data_only')
     d = np.array(get_list_2d(sheet, 0, 25, 0, 25))
-    return d + stay
+    d += stay
+    compress = np.argsort(np.argsort(d))
+    d[compress > edge_limit] = 100_000_000
+    return d
 
 
 def get_happiness(country):
@@ -37,7 +44,7 @@ def get_happiness(country):
     sheet = wb.sheet_by_name(country)
     col = ord("R") - ord("A")
     happiness = [sheet.cell_value(row, col) for row in range(3, 28)]
-    return np.array(happiness) + 1 / 5
+    return np.array(happiness)
 
 
 def get_spots():
@@ -85,7 +92,9 @@ def get_distance():
 
 
 if __name__ == '__main__':
-    print(get_time())
-    print(get_happiness("中国"))
-    print(get_spots())
-    print(get_distance())
+    for v in get_time(edge_limit=10):
+        print(" ".join(map(lambda x: str(x) if x < 10000 else "INF", v)))
+    # print(get_time(edge_limit=10))
+    # print(get_happiness("中国"))
+    # print(get_spots())
+    # print(get_distance())

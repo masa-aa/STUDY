@@ -51,7 +51,6 @@ class MonteCarloAgent(ELAgent):
                 alpha = 1 / N[s][a]
                 # 更新式
                 self.Q[s][a] += alpha * (G - self.Q[s][a])
-
             if show_log and e != 0 and e % report_interval == 0:
                 self.show_reward_log(episode=e, interval=report_interval)
 

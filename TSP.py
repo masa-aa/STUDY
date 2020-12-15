@@ -27,27 +27,20 @@ def TSP(n: "頂点数", dist: "距離行列", s: "始点", t: "終点"):
                 if dp[S][u] + dist[u][v] < dp[S + (1 << u)][v]:
                     dp[S + (1 << u)][v] = dp[S][u] + dist[u][v]
                     prev[S + (1 << u)][v] = u
-
-    if dp[(1 << n) - 1][t] == INF:
-        return float("inf"), "There is no pathway that meets the requirements."
-
     # 経路復元
-    path = []
+    path = [t]
     now, state = t, (1 << n) - 1
     while state:
-        now = prev[state][now]
         state -= 1 << now
+        now = prev[state][now]
         path.append(now)
     path.reverse()
 
-    return path
+    return path[1:]
 
 
 def convert(dist, nodes):
-    n = len(dist[0])
-    dic = [-1] * n
-    for i, e in enumerate(nodes):
-        dic[e] = i
+    print(nodes)
     new_dist = [[0] * len(nodes) for _ in range(len(nodes))]
     new_n = len(nodes)
     for i, e1 in enumerate(nodes):
@@ -55,14 +48,14 @@ def convert(dist, nodes):
             new_dist[i][j] = dist[e1][e2]
     tsp = TSP(new_n, new_dist, 0, new_n - 1)
     spots = get_spots()
-    return list(map(lambda x: spots[nodes[x]], tsp))
+    return tuple(map(lambda x: spots[nodes[x]], tsp))
 
 
 if __name__ == '__main__':
     from get_data import get_time, get_spots
     d = get_time(stay=30)
     spots = get_spots()
-    routes = (12, 11, 1, 4, 0, 2, 6)
+    routes = (12, 2, 22, 4, 10, 6)
     new_routes = convert(d, routes)
     print(list(map(lambda x: spots[x], routes)))
     print(new_routes)

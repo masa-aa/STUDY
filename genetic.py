@@ -21,7 +21,7 @@ def _train(a):
                episode_count=episode_count,
                epsilon=epsilon,
                Q=Q,
-               report_interval=1000,
+               report_interval=1000000,
                country=country,
                save=True)
     print("fininsh:{}".format(cnt))
@@ -47,12 +47,12 @@ def _one_cpu(n):
 
 if __name__ == "__main__":
 
-    n = 16
+    n = 96
     country = "中国"
     env = make_env(country=country)
     Qs = [{} for _ in range(n)]
     t = time()
-    results = multi_train(n, Qs, 100000, 0.1, country)
+    results = multi_train(n, Qs, 600000, 0.1, country)
     t = int(time() - t)
     print("{}h {}m {}s".format(t // 3600, (t % 3600) // 60, t % 60))
     results.sort(key=lambda x: x[0], reverse=1)
