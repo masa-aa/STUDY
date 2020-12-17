@@ -1,6 +1,6 @@
 import gym
 import Kyoto_env_ontime
-from get_data import get_time, get_happiness, get_spots
+from get_data import get_spots
 import numpy as np
 
 

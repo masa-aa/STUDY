@@ -5,10 +5,9 @@ from collections import defaultdict
 
 class ELAgent():
 
-    def __init__(self, epsilon, env, Q={}):
-        if isinstance(Q, dict):
-            Q = defaultdict(lambda: [0] * env.action_space.n, Q)
-        self.Q = Q
+    def __init__(self, epsilon, env):
+
+        self.Q = {}
         self.epsilon = epsilon
         self.reward_log = []
 

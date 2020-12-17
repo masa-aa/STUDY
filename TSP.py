@@ -40,7 +40,6 @@ def TSP(n: "頂点数", dist: "距離行列", s: "始点", t: "終点"):
 
 
 def convert(dist, nodes):
-    print(nodes)
     new_dist = [[0] * len(nodes) for _ in range(len(nodes))]
     new_n = len(nodes)
     for i, e1 in enumerate(nodes):

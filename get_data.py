@@ -22,7 +22,7 @@ def get_list_2d(sheet, start_row, end_row, start_col, end_col):
             for row in range(start_row, end_row)]
 
 
-def get_time(stay=0, edge_limit=5):
+def get_time(stay=0, edge_limit=6):
     """距離行列(time)を返す"""
     """
     　stay:滞在時間
@@ -34,6 +34,9 @@ def get_time(stay=0, edge_limit=5):
     d += stay
     compress = np.argsort(np.argsort(d))
     d[compress > edge_limit] = 100_000_000
+    for i in range(25):
+        if i != 12:
+            d[i][11] = 100_000_000
     return d
 
 

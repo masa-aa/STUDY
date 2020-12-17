@@ -24,14 +24,13 @@ def make_env(n=25, start=12, goal=6, country="中国", stay=30):
 
 
 def train(Agent=MonteCarloAgent,
-          episode_count=10,
+          episode_count=1,
           epsilon=0.1,
-          Q={},
           report_interval=1,
           country="中国",
           save=False):
     env = make_env(country=country)
-    agent = Agent(epsilon=epsilon, env=env, Q=Q)
+    agent = Agent(epsilon=epsilon, env=env)
     agent.learn(env, episode_count=episode_count, report_interval=report_interval, show_log=False)
     # show_q_value(agent.Q)
     if not save:
@@ -45,7 +44,6 @@ if __name__ == "__main__":
     Q = train(Agent=MonteCarloAgent,
               episode_count=200000,
               epsilon=0.1,
-              Q={},
               report_interval=1000,
               country="中国",
               save=True)
