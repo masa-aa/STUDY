@@ -2,6 +2,13 @@
 \usepackage{bm}
 \usepackage[dvipdfmx]{graphicx}
 \usepackage{ascmac}
+\usepackage{amsthm}
+\usepackage{amsmath, amssymb}
+\theoremstyle{definition}
+\newtheorem{theorem}{定理}
+\newtheorem*{theorem*}{定理}
+\newtheorem{definition}[theorem]{定義}
+\newtheorem*{definition*}{定義}
 
 \title{強化学習による最適観光ルート推定の研究}
 \author{統計ファイナンス研究室\\
@@ -32,33 +39,103 @@
     \frac{8\pi G}{c^2} T_{\mu\nu}
 \end{equation}
 
+\chapter{グラフ理論}
+この章の内容は、渡邊先生の離散数学の授業を元に記録した講義ノートの定義を使う．
+\section{定義}
+\begin{definition}(無向グラフ)
+    有限集合$V=\{v_1,v_2,\ldots,v_n\}$と有限集合$E=\{e_1,e_2,\ldots,e_n\}\subset V^2$を考える．このとき，2つの集合の組$G=(V,E)$を無向グラフという．集合$V$の要素をグラフ$G$の頂点，集合$E$の要素を$G$の辺という．また，$e=\{u,v\}\in E$であるとき，$u$と$v$は隣接するという．
+\end{definition}
+\begin{definition}(部分グラフ)
+    無向グラフ$G=(V,E),G'=(V',E')$について，$V\subset V',E\subset E'$であるとき， $G$は$G'$の部分グラフという．
+\end{definition}
+\begin{definition}(道,\ path)
+    無向グラフ$G=(V,E)$，$G$の互いに異なる頂点列$P=(v_1,v_2,\ldots, v_{k+1})$とする．
+    \begin{equation}
+        V'=\{v_i|\ i=1,2,\ldots,k+1\}
+    \end{equation}
+    \begin{equation}
+        E'=\{\{v_i,v_{i+1}\}\in E\ |\ i=1,2,\ldots,k\}
+    \end{equation}
+    としたとき$G'=(V',E')$を$G$の長さ$k$の道(path)という．特に，$s=v_1,\ t=v_{k+1}$とすると，$G'$を$s-t$ pathという．
+\end{definition}
+\begin{definition}(辺次数)
+    $G=(V,E)$を無向グラフとする．そのとき，$v\in V$に対して，$v$に隣接する辺の集合を$\delta(v)$で表す．このとき，$\deg_G(v)=|\delta(v)|$を頂点$ v$の辺次数と呼ぶ．
+\end{definition}
+\section{グラフの表現}
+$G=(V,E)$を無向グラフ，$n=|V|$とする．$w:E\to \mathbb{R}$を重み関数とする．$n$次正方行列$A=A(G)=a_{ij}$を
+\begin{eqnarray}
+    a_{ij}=
+    \begin{cases}
+        & w(e)\ (e=\{v_i,v_j\}\in E)\\
+        & \infty\ \ \ \ ({\rm otherwise})
+    \end{cases}
+\end{eqnarray}
+で定義し$A(G)$を無向グラフの隣接行列という.\\
+隣接行列でグラフを表現する場合，2頂点間に辺があるか否かが定数時間で判定できるが，常に$O(|V|^2)$のメモリを消費する．道のように辺の数が少ない疎グラフの場合，隣接行列のほとんどが$\infty$で埋まることになる．\\
+集合の列$A=A(G)=a_v$を
+\begin{equation}
+    a_v=\{(u,w(e))\ |\ u\in V,\ e=\{u,v\}\in E \})
+\end{equation}
+とする．このとき$O(|V|+|E|)$のメモリしか消費しない．
+
 
 
 \chapter{強化学習}
+学習に用いた強化学習の理論を記す．
+\section{} 
 
-この辺から本番。
 
-\section{文献の引用の仕方} 
 
+\chapter{巡回セールスマン問題}
+巡回セールスマン問題とは,\ 頂点数$N$の重み付き有向グラフの隣接行列$D$が与えられる.\ 頂点$s$から頂点$t$への道の集合の中で重みの総和が最小の道を求める問題である.
+\section{道の全列挙}
+始点$s$と終点$t$を除く集合を$X=\{1,2\ldots ,n\}\setminus\{s,t\}$, $n$次対称群を$S_n$とする.
+\begin{eqnarray}
+    \min_{\sigma\in S_{N-2}}
+    \left(D_{s,\sigma(X_0)} + D_{\sigma(X_{n-2}),t} +
+    \sum_{i=1}^{n-3}
+        D_{\sigma(X_i),\sigma(X_{i+1})} 
+    \right)
+\end{eqnarray}
+とすると, $|S_{N-2}|=(N-2)!$なので,\\ 巡回セールスマン問題を時間計算量$O((N-1)!)$で求めることができる.
+
+\section{集合に対する動的計画法}
+$S$を既に訪れた頂点集合,現在頂点$v$にいるとする.
+$$dp(S,v)=(vに来るまでにかかる距離の総和の最小値)$$
+このとき,以下の漸化式が成立.
+\begin{eqnarray}
+    \begin{cases}
+        & dp(\emptyset,s)=0\\
+        & dp(S,v)=\min_{u \notin S}dp(S\setminus\{u\},u)+dp(u,v)
+    \end{cases}
+\end{eqnarray}
+$X=\{1,2\ldots ,n\}$としたとき,巡回セールスマン問題の解は$dp(X,t)$である.\\
+よって時間計算量$O(2^NN^2)$で解くことができた.
+\section{ヒューリスティックな解法}
+集合に対する動的計画法を用いた解法は$N$が大きくなるにつれて指数的に時間計算量が大きくなるため,頂点数が大きな巡回セールスマン問題において計算結果を出すことができない.
+例えば山登り法や焼きなまし法,遺伝的アルゴリズムを用いることにより多項式時間で近似解を求めることができる.
+\chapter{main}
+
+
+
+
+
+
+
+
+
+\chapter{}
 データは参考文献\cite{rika} にあったものを使った．
 この文献\cite{ten}も参考にした。
 
 \section{図の挿入の仕方}
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[width=7cm]{./plot1.pdf}
-    \caption{サイン関数のグラフ}
-  \end{center}
-\end{figure}
 
-\chapter{巡回セールスマン問題}
-巡回セールスマン問題とは,\ 頂点数$N$の重み付き有向グラフの距離行列$D$が与えられる.\ 頂点$s$から頂点$t$への道の集合の中で重みの総和が最小の道を求める問題である.
-\section{道の全列挙}
-
-
-
-
-
+% \begin{figure}[h]
+%   \begin{center}
+%     \includegraphics[width=7cm]{./plot1.pdf}
+%     \caption{サイン関数のグラフ}
+%   \end{center}
+% \end{figure}
 
 \chapter{最後に}
 

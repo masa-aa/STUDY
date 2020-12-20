@@ -1,8 +1,9 @@
 import xlrd
 import pprint
 import os
-import numpy as np
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+import numpy as np
 from math import sqrt, pi, cos, sin, acos
 
 
