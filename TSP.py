@@ -27,16 +27,18 @@ def TSP(n: "頂点数", dist: "距離行列", s: "始点", t: "終点"):
                 if dp[S][u] + dist[u][v] < dp[S + (1 << u)][v]:
                     dp[S + (1 << u)][v] = dp[S][u] + dist[u][v]
                     prev[S + (1 << u)][v] = u
+
     # 経路復元
     path = [t]
     now, state = t, (1 << n) - 1
-    while state:
+    while state > 1:
         state -= 1 << now
         now = prev[state][now]
         path.append(now)
+
     path.reverse()
 
-    return path[1:]
+    return path
 
 
 def convert(dist, nodes):
