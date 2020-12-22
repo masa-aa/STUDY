@@ -8,6 +8,7 @@
 \newtheorem{theorem}{定理}
 \newtheorem{definition}[theorem]{定義}
 \newtheorem{prop}{命題}
+\newtheorem{algorithm}{アルゴリズム}
 
 \title{強化学習による最適観光ルート推定の研究}
 \author{統計ファイナンス研究室\\
@@ -156,10 +157,76 @@ agentが常に価値が最大になるように行動を選択する場合以下
     V(s)\leftarrow\max_a\sum_{s'}T(s'|s,a)(R(s,s')+\gamma V(s'))
 \end{equation}
 これを価値反復法という．
-\section{学習}
+\section{経験の蓄積と活用のバランス}
+agentは自ら行動することで状態の遷移，また得られる報酬を調査する．なるべく色々な状態で色々な行動を取ると多くの情報が得られるが報酬を最大化することができない．このように探索と活用はトレードオフの関係にある．\newpage
+\begin{algorithm}[$\varepsilon-$greedy法]
+    $Q(s,a)$を状態$s$で行動$a$の価値，$\varepsilon$を十分小さな正の値とする．$(0<\varepsilon<1)$\\
+    行動確率$\pi(s|a)$を以下で定める．
+    \begin{eqnarray}
+        \pi(s|a)=
+            \begin{cases}
+                & 1-\varepsilon \ \ (a={\rm argmax}(Q(s,a))\\ \\
+                & \varepsilon \ \ ({\rm otherwise})
+            \end{cases}
+    \end{eqnarray}
+\end{algorithm}
+$\varepsilon$が大きいと探索を多くし，$\varepsilon$が小さいと経験の蓄積を多くする．
+\section{更新アルゴリズム}
+強化学習の異なる3つの更新アルゴリズムを記す．
+\subsection{モンテカルロ法}
+\begin{algorithm}[モンテカルロ法]
+    $0<\alpha\leq1$とする．
+    \begin{equation}
+        V(s_t)\leftarrow V(s_t)+\alpha
+        \left(\left(\sum_{k=t+1}^T\gamma^{k-t-1}r_k\right)-V(s_t)\right)
+    \end{equation}
+\end{algorithm}
+$\alpha$は学習率と呼ばれる．\\
+\\
+エピソード終了時に任意の$t$について獲得できた報酬の総和と$V(s_t)$との加重平均を取り更新を行う．
+エピソード終了時まで修正ができないので最適でないと途中で分かっていてもエピソード終了まで続けないといけないというデメリットがある．また，予測で更新しないので，ほとんどの場合において$\gamma=1$である．
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=8cm]{monte.png}
+    \caption{モンテカルロ法の幾何的な意味}
+    \label{fig:monte}
+\end{figure}
+\subsection{TD法}
+\begin{algorithm}[TD(0)法]
+    \begin{equation}
+        V(s_t)\leftarrow V(s_t)+\alpha(r_{t+1}+\gamma V(s_{t+1})-V(s_t))
+    \end{equation}
+\end{algorithm}
+ベルマン方程式の解$V(s_t)=r_{t+1}+\gamma V(s_{t+1})$を用いてエピソード終了の終了を待たずに更新を行う．モンテカルロ法のように修正前の行動が延々と続けられることはない．しかし，見積もりによる更新が行われるため正確性に欠けるというデメリットがある．\\
+$V(s_{t+1})$についてベルマン方程式を用いて展開すると，
+\begin{equation}
+    V(s_t)\leftarrow V(s_t)+\alpha(r_{t+1}+\gamma r_{t+2}+\gamma^2 V(s_{t+2})-V(s_t))
+\end{equation}
+が成り立つ．これを2期のMulti-step Learnigという．同様にベルマン方程式を用いることで$k$期$(2\leq k)$のMulti-step Learnigを考えることができ，$k\to \infty$とするとモンテカルロ法と一致することが示される．
 
-
-
+\subsection{TD($\lambda$)法}
+前節において$k$を固定するTD法を考えたが，複数のstepを組み合わせる手法も考えられる．$k$ step先の価値を$G_t^{(k)}$とする．つまり，
+\begin{align*}
+    &G_t^{(1)}=r_{t+1}+\gamma V(s_{t+1})\\
+    &G_t^{(2)}=r_{t+1}+\gamma r_{t+2}+\gamma^2 V(s_{t+2})\\
+    &\ \ \ \  \ \ \ \vdots\\
+    &G_t^{(T-t)}=r_{t+1}+\gamma r_{t+2}+\cdots+\gamma^{T-t} r_{_T}
+\end{align*}
+とする．
+これらに関して加重平均を考える．具体的には$0\leq\lambda\leq 1$として，
+\begin{equation}
+    G_t^{(1)}:G_t^{(2)}:\ldots:G_t^{(T-t)}=1:\lambda:\ldots:\lambda^{T-t-1}
+\end{equation}
+とする．$\displaystyle \sum_{n=0}^{T-t-1}\lambda^n=1$となるように定数倍を注意すると，
+\begin{equation}
+    G_t^{\lambda}=(1-\lambda)\sum_{n=1}^{T-t-1}\lambda^{n-1}G_t^{n}+\lambda^{T-t-1}G_t^{(T-t)}
+\end{equation}
+が導出される．
+$\lambda$を大きくするにつれ長い経験をより重視して特に$\lambda=1$のとき，モンテカルロ法と一致する．
+逆に$\lambda=0$の時はTD(0)法と一致する．\\
+$\lambda$の値を調整することで長いstepを重視するか短いstepを重視するか調整できるため，TD($\lambda$)法はモンテカルロ法とTD法の折衷案として用いられる．
+\section{まとめ}
+方策決定の手法と更新アルゴリズムを見てきた．これらと環境を実装することで独自の強化学習を構築することができる．
 
 
 \chapter{巡回セールスマン問題}
@@ -190,10 +257,32 @@ $X=\{1,2\ldots ,n\}$としたとき，巡回セールスマン問題の解は$dp
 \section{ヒューリスティックな解法}
 集合に対する動的計画法を用いた解法は$N$が大きくなるにつれて指数的に時間計算量が大きくなるため，頂点数が大きな巡回セールスマン問題において計算結果を出すことができない．
 例えば山登り法や焼きなまし法，遺伝的アルゴリズムを用いることにより多項式時間で近似解を求めることができる．
-\chapter{main}
-
-
-
+\chapter{問題設定}
+\section{具体的な問題設定}
+京都府の観光地(25地点)に関するデータを用いて以下の条件の下で総合魅力度の総和を最大化する．
+\begin{enumerate}
+    \item 始点は京都駅，終点は祇園のpathである．
+    \item 合計所要時間は300分である．
+    \item 任意の観光地の滞在時間は30分である．
+    \item 任意の頂点$i,j$ついて$i$から$j$への移動は$D_{ij}$分かかる．
+    \item 任意の頂点$i$には総合魅力度$C_i$が設定されていて，頂点$i$を訪れると$C_i$を得る
+    \item 任意の頂点$i$について$D_i$の値の中から小さい順に5つの頂点にのみ辺を結ぶ．
+    \item 例外として京都タワーの入次数は1で京都駅からのみ行くことができる．
+\end{enumerate}
+条件の7は京都駅から京都タワーへは徒歩2分で行けるため外れ値として設定した．
+\section{抽象化}
+自己閉路を持たない重み付き有向グラフ$G$考える．$G$の任意の頂点$i$には報酬$C_i$が設定されている．
+$s$から$t$へのpathを$s=p_0\to p_1 \ldots p_{m-1}\to p_m=t$としたとき，
+\begin{equation}
+    \sum_{i=0}^{m-1} D_{p_ip_{i+1}}\leq T
+\end{equation}
+のもとで
+\begin{equation}
+    \sum_{i=0}^{m} C_{p_i}
+\end{equation}
+を最大化する．
+\section{厳密解}
+\chapter{手法}
 
 
 
