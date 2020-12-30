@@ -46,7 +46,7 @@ def get_happiness(country):
     """warning:各幸福度が100以上になってはならない"""
     wb = xlrd.open_workbook('data/AHP.xlsx')
     sheet = wb.sheet_by_name(country)
-    col = ord("R") - ord("A")
+    col = ord("K") - ord("A")
     happiness = [sheet.cell_value(row, col) for row in range(3, 28)]
     return np.array(happiness)
 
@@ -96,9 +96,9 @@ def get_distance():
 
 
 if __name__ == '__main__':
-    for v in get_time(edge_limit=10):
-        print(" ".join(map(lambda x: str(x) if x < 10000 else "INF", v)))
+    # for v in get_time(edge_limit=10):
+    #     print(" ".join(map(lambda x: str(x) if x < 10000 else "INF", v)))
     # print(get_time(edge_limit=10))
-    # print(get_happiness("中国"))
+    print(get_happiness("中国"))
     # print(get_spots())
     # print(get_distance())
