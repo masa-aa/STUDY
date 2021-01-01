@@ -10,8 +10,8 @@ from collections import defaultdict
 
 def make_env(n=25, start=12, goal=6, country="中国", stay=30):
     """標準は京都駅スタート, 祇園解散"""
-    d = get_time(stay=stay)
-    happiness = get_happiness(country) * 100
+    d = get_time("嵐山", stay=stay)
+    happiness = get_happiness(country, "嵐山")
     distance = get_distance()
     time_limit = 300
     env = gym.make("Kyoto_ontime-v0",

@@ -8,7 +8,7 @@ from math import sqrt, pi, cos, sin, acos
 
 
 def distance(From, To):
-    # 東経と北緯が与えられて距離を返す.
+    """東経と北緯が与えられて距離を返す."""
     x0, y0 = From
     x1, y1 = To
     x0 *= pi / 180
@@ -23,7 +23,7 @@ def get_list_2d(sheet, start_row, end_row, start_col, end_col):
             for row in range(start_row, end_row)]
 
 
-def get_time(stay=0, edge_limit=6):
+def get_time(*go, stay=0, edge_limit=6):
     """距離行列(time)を返す"""
     """
     　stay:滞在時間
@@ -33,21 +33,31 @@ def get_time(stay=0, edge_limit=6):
     sheet = wb.sheet_by_name('data_only')
     d = np.array(get_list_2d(sheet, 0, 25, 0, 25))
     d += stay
+    spots = get_spots()
+    go = {spots.index(spot) for spot in go}
     compress = np.argsort(np.argsort(d))
-    d[compress > edge_limit] = 100_000_000
     for i in range(25):
         if i != 12:
             d[i][11] = 100_000_000
+
+    for i in range(25):
+        for j in range(25):
+            if compress[i][j] > edge_limit and i not in go and j not in go:
+                d[i][j] = 100_000_000
     return d
 
 
-def get_happiness(country):
+def get_happiness(country, *go):
     """幸福度を返す"""
     """warning:各幸福度が100以上になってはならない"""
     wb = xlrd.open_workbook('data/AHP.xlsx')
     sheet = wb.sheet_by_name(country)
     col = ord("K") - ord("A")
-    happiness = [sheet.cell_value(row, col) for row in range(3, 28)]
+    spots = get_spots()
+    happiness = np.array([sheet.cell_value(row, col) for row in range(3, 28)]) * 100
+    s = 2 * happiness.max()
+    for spot in go:
+        happiness[spots.index(spot)] = s
     return np.array(happiness)
 
 
@@ -99,6 +109,7 @@ if __name__ == '__main__':
     # for v in get_time(edge_limit=10):
     #     print(" ".join(map(lambda x: str(x) if x < 10000 else "INF", v)))
     # print(get_time(edge_limit=10))
-    print(get_happiness("中国"))
+    print(get_happiness("中国", "清水寺"))
     # print(get_spots())
     # print(get_distance())
+    # print(get_time("嵐山", stay=30)[5])

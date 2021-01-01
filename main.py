@@ -1,5 +1,4 @@
 import gym
-import Kyoto_env_ontime
 import numpy as np
 from monte_carlo_ontime import MonteCarloAgent
 from q_learning_ontime import QLearningAgent
@@ -68,4 +67,4 @@ def main_train(country="中国", num_loop=48, train_loop=1000000):
 
 
 if __name__ == "__main__":
-    main_train(num_loop=16, train_loop=10000)
+    print(main_train(num_loop=16, train_loop=1_000_000)[0][1])
