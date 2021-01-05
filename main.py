@@ -66,5 +66,29 @@ def main_train(country="中国", num_loop=48, train_loop=1000000):
     return unique_results
 
 
+def main_train_Q(country="中国", num_loop=48, train_loop=1000000):
+    env = make_env(country=country)
+    t = time()
+    results = multi_train(num_loop, train_loop, country)
+    t = int(time() - t)
+    print("{}h {}m {}s".format(t // 3600, (t % 3600) // 60, t % 60))
+    results.sort(key=lambda x: x[0], reverse=1)
+    # Qs = [v[1] for v in results]
+    routes = set()
+    unique_results = []
+    for score, q in results:
+        score, route = play(env, q, show_mode=2)
+        route = convert(env.d, tuple(route))
+
+        if route in routes:
+            continue
+        unique_results.append((score, q))
+        routes.add(route)
+    unique_results.sort(key=lambda x: x[0], reverse=True)
+    # for score, route in unique_results:
+    #     print("score:{}, route:{}".format(score, route))
+    return unique_results
+
+
 if __name__ == "__main__":
     print(main_train(num_loop=16, train_loop=1_000_000)[0][1])
