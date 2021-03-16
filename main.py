@@ -12,6 +12,7 @@ cnt = 0
 
 
 def _train(a):
+    """multi_trainに渡す用の関数"""
     global cnt
     episode_count, epsilon, country = a
     print("start:{}".format(cnt))
@@ -28,6 +29,7 @@ def _train(a):
 
 
 def multi_train(n, episode_count=2000000, country="中国"):
+    """複数のcpuを用いて学習する．"""
     rand = [0.01, 0.03, 0.05, 0.07, 0.1, 0.15, 0.2, 0.3]
     p = Pool(cpu_count())
     results = p.map(_train, [(episode_count, np.random.choice(rand), country) for i in range(n)])
@@ -36,6 +38,7 @@ def multi_train(n, episode_count=2000000, country="中国"):
 
 
 def _one_cpu(n):
+    """test用の関数"""
     rewards = []
     for _ in range(n):
         rewards.append(_train((2000000, 0.1, "中国")))

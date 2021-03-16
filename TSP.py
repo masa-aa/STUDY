@@ -8,7 +8,7 @@ TSP:
 from get_data import get_spots
 
 
-def TSP(n: "頂点数", dist: "距離行列", s: "始点", t: "終点"):
+def TSP(n: "頂点数", dist: "距離行列"):
     # dist[i][j] = i->j の距離
     # length:通る頂点の数
     INF = 1_000_000_000
@@ -17,7 +17,7 @@ def TSP(n: "頂点数", dist: "距離行列", s: "始点", t: "終点"):
     # prev[S][v] = 集合Sの要素をすべて通って頂点vに行ったとき, 直前に通った頂点
     dp = [[INF] * n for _ in range(1 << n)]
     prev = [[-1] * n for _ in range(1 << n)]
-    dp[0][s] = 0
+    dp[0][0] = 0
 
     for S in range(1 << n):
         for u in range(n):
@@ -29,8 +29,8 @@ def TSP(n: "頂点数", dist: "距離行列", s: "始点", t: "終点"):
                     prev[S + (1 << u)][v] = u
 
     # 経路復元
-    path = [t]
-    now, state = t, (1 << n) - 1
+    path = [n - 1]
+    now, state = n - 1, (1 << n) - 1
     while state > 1:
         state -= 1 << now
         now = prev[state][now]
@@ -47,7 +47,7 @@ def convert(dist, nodes):
     for i, e1 in enumerate(nodes):
         for j, e2 in enumerate(nodes):
             new_dist[i][j] = dist[e1][e2]
-    tsp = TSP(new_n, new_dist, 0, new_n - 1)
+    tsp = TSP(new_n, new_dist)
     spots = get_spots()
     return tuple(map(lambda x: spots[nodes[x]], tsp))
 
