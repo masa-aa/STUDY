@@ -9,9 +9,10 @@ TSP:
 from get_data import get_spots
 
 
-def TSP(n: "頂点数", dist: "距離行列"):
+def TSP(dist: "距離行列"):
     # dist[i][j] = i->j の距離
     # length:通る頂点の数
+    n = len(dist)
     INF = 1_000_000_000
 
     # dp[S][v] = 集合Sの要素をすべて通って頂点vに行く最短経路長
@@ -44,11 +45,10 @@ def TSP(n: "頂点数", dist: "距離行列"):
 
 def convert(dist, nodes):
     new_dist = [[0] * len(nodes) for _ in range(len(nodes))]
-    new_n = len(nodes)
     for i, e1 in enumerate(nodes):
         for j, e2 in enumerate(nodes):
             new_dist[i][j] = dist[e1][e2]
-    tsp = TSP(new_n, new_dist)
+    tsp = TSP(new_dist)
     spots = get_spots()
     return tuple(map(lambda x: spots[nodes[x]], tsp))
 
